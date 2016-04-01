@@ -1,0 +1,66 @@
+#!/bin/sh
+#
+# atd Starts/stop the "supervisord" daemon
+
+PYTHON="/usr/local/Python-2.7.11/bin/python2.7"
+CONFIG="/etc/supervisord.conf"
+SUPERVISORD="/usr/local/Python-2.7.11/bin/supervisord"
+SUPERVISOR_USER="supervisord"
+SUPERVISORD_CMD="${SUPERVISORD} -c ${CONFIG} --user=${SUPERVISOR_USER}"
+pidfile="/home/supervisord/supervisord.pid"
+
+
+function super_start() {
+	${PYTHON} ${SUPERVISORD_CMD}
+	retval=$?
+	echo "Starting ${SUPERVISORD}"
+	return ${retval}
+}
+
+function super_stop() {
+	kill -s 15 `cat "${pidfile}"`
+	if [ $? == 0 ]
+	then
+		echo "Stoping ${SUPERVISORD}"
+	else
+		echo "Stoping ${SUPERVISORD} Failed"
+	fi
+	return $?
+}
+
+function super_restart() {
+	super_stop
+	super_start
+	return $?
+}
+
+function super_status() {
+	if [ -e ${pidfile} ]
+	then
+		echo "${SUPERVISORD} is running"
+	else
+		echo "${SUPERVISORD} is stopped"
+	fi
+}
+
+case "$1" in
+    start)
+        super_start && exit 0
+        $1
+        ;;
+    stop)
+        super_stop && exit 0
+        $1
+        ;;
+    restart)
+	super_restart && exit 0
+        $1
+        ;;
+    status)
+        super_status
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        exit 2
+esac
+exit $?
