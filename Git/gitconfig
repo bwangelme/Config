@@ -3,7 +3,6 @@
 	name = xff
 [core]
 	editor = vim
-    quotepath = false
 [color]
 	ui = true
 [alias]
