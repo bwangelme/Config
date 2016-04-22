@@ -3,12 +3,11 @@
 	name = xff
 [core]
 	editor = vim
-	quotepath = false
 [color]
 	ui = true
 [alias]
-	slog  = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	slog  = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate
 	unstage = checkout --
-	st = status
+    st = status
 [push]
 	default = simple
