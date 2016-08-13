@@ -73,6 +73,7 @@ function install_shadowsocks() {
     LOG_DIR="/var/log/shadowsocks/"
     if [ ! -d ${LOG_DIR} ];then
         mkdir -p ${LOG_DIR}
+        chown shadowsocks:shadowsocks ${LOG_DIR}
         echo "Make the dir ${LOG_DIR}"
     fi
 
