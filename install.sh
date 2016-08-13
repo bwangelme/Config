@@ -13,11 +13,19 @@ fi
 
 function install_supervisor() {
     INIT_FILE="/etc/init.d/supervisord"
-    CONFIG_DIR="/etc/supervisor/"
-    CONFIG_FILE=${CONFIG_DIR}"supervisord.conf"
+    CONFIG_DIR="/etc/supervisor"
     LOG_DIR="/var/log/supervisord/"
 
-    apt-get install python-pip, python-setuptool, python-wheel
+    PIP=`which pip`
+    if [ ! -x ${PIP} ];then
+        apt-get install python-pip
+    fi
+
+    WHEEL=`dpkg -l | grep 'python-wheel'`
+    if [ "${WHEEL}" == '' ];then
+        apt-get install python-wheel
+    fi
+    apt-get install python-setuptools, python-wheel
 
     if [ -e  ${INIT_FILE} ];then
         mv ${INIT_FILE} ${INIT_FILE}".bak"
@@ -27,15 +35,12 @@ function install_supervisor() {
     echo "Copy the ${INIT_FILE}"
 
     if [ ! -d ${CONFIG_DIR} ];then
-        mkdir ${CONFIG_DIR}
-        echo "Create the ${CONFIG_DIR}"
+        cp -r ./Supervisor/supervisor /etc/
+    else
+        mv ${CONFIG_DIR} ${CONFIG_DIR}".bak"
+        cp -r ./Supervisor/supervisor /etc/
     fi
-
-    if [ -e ${CONFIG_FILE} ];then
-        mv ${CONFIG_FILE} ${CONFIG_FILE}".bak"
-    fi
-    cp ./Supervisor/supervisord.conf ${CONFIG_FILE}
-    echo "Copy the ${CONFIG_FILE}"
+    echo "Copy the ${CONFIG_DIR}"
 
     if [ ! -d ${LOG_DIR} ];then
         mkdir ${LOG_DIR}
