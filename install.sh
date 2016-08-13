@@ -27,12 +27,12 @@ function install_supervisor() {
         mkdir ${CONFIG_DIR}
     fi
 
-    if [ -e ${CONFIG_FILE}];then
+    if [ -e ${CONFIG_FILE} ];then
         mv ${CONFIG_FILE} ${CONFIG_FILE}".bak"
     fi
     cp ./Supervisor/supervisord.conf ${CONFIG_FILE}
 
-    if [ -d ${LOG_DIR}];then
+    if [ ! -d ${LOG_DIR} ];then
         mkdir ${LOG_DIR}
     fi
 
