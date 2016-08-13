@@ -3,7 +3,7 @@
 # atd Starts/stop the "supervisord" daemon
 
 PYTHON=`which python`
-CONFIG="/etc/supervisord.conf"
+CONFIG="/etc/supervisor/supervisord.conf"
 SUPERVISORD=`which supervisord`
 SUPERVISOR_USER="root"
 SUPERVISORD_CMD="${SUPERVISORD} -c ${CONFIG} --user=${SUPERVISOR_USER}"
