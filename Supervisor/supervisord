@@ -1,13 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 #
 # atd Starts/stop the "supervisord" daemon
 
-PYTHON="/usr/local/Python-2.7.11/bin/python2.7"
+PYTHON=`which python`
 CONFIG="/etc/supervisord.conf"
-SUPERVISORD="/usr/local/Python-2.7.11/bin/supervisord"
-SUPERVISOR_USER="supervisord"
+SUPERVISORD=`which supervisord`
+SUPERVISOR_USER="root"
 SUPERVISORD_CMD="${SUPERVISORD} -c ${CONFIG} --user=${SUPERVISOR_USER}"
-pidfile="/home/supervisord/supervisord.pid"
+pidfile="/var/run/supervisord.pid"
 
 
 function super_start() {
