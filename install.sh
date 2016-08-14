@@ -82,7 +82,7 @@ function install_shadowsocks() {
 
     # install shadowsocks
     SSSERVER=`which ssserver`
-    if [ ! -x ${SSSERVER} ];then
+    if [ ! -x '${SSSERVER}' ];then
         pip install shadowsocks
         echo "Install the shadowsocks"
     fi
