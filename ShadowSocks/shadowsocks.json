@@ -1,8 +1,8 @@
 {
-"server":"us-la-s3b.j-j.pw",
-"server_port":12573,
-"local_address":"127.0.0.1",
-"local_port":1080,
-"password":"jkl.15987",
-"method":"rc4-md5"
+    "server":"us-la-s3b.j-j.pw",
+    "server_port":12573,
+    "local_address":"127.0.0.1",
+    "local_port":1080,
+    "password":"default",
+    "method":"rc4-md5"
 }

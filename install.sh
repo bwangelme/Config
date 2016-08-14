@@ -25,10 +25,14 @@ function install_supervisor() {
     if [ "${WHEEL}" == '' ];then
         apt-get install python-wheel
     fi
-    apt-get install python-setuptools, python-wheel
+    SETUPTOOLS=`dpkg -l | grep 'python-setuptools'`
+    if [ "${SETUPTOOLS}" == '' ];then
+        apt-get install python-setuptools
+    fi
 
     if [ -e  ${INIT_FILE} ];then
-        mv ${INIT_FILE} ${INIT_FILE}".bak"
+        mv ${INIT_FILE} /tmp/
+        echo "Move the original ${INIT_FILE} to the /tmp"
     fi
     cp ./Supervisor/supervisord ${INIT_FILE}
     chmod a+x ${INIT_FILE}
@@ -37,7 +41,12 @@ function install_supervisor() {
     if [ ! -d ${CONFIG_DIR} ];then
         cp -r ./Supervisor/supervisor /etc/
     else
-        mv ${CONFIG_DIR} ${CONFIG_DIR}".bak"
+        if [ -d "/tmp/supervisor/" ];then
+            rm -rf /tmp/supervisor
+            echo "Delete the /tmp/supervisor"
+        fi
+        mv ${CONFIG_DIR} /tmp/
+        echo "Move the original ${CONFIG_DIR} to the /tmp"
         cp -r ./Supervisor/supervisor /etc/
     fi
     echo "Copy the ${CONFIG_DIR}"
@@ -46,20 +55,14 @@ function install_supervisor() {
         mkdir ${LOG_DIR}
     fi
 
-    ${INIT_FILE} start && ${INIT_FILE} status
+    echo "Please run the |${INIT_FILE} start| to start the Supervisor"
 
     return $?
 }
 
 function install_shadowsocks() {
-    # check the pip
-    PIP=`which pip`
-    if [ ! -x ${PIP} ];then
-        install_supervisor
-        if [ $? != 0 ];then
-            exit $?
-        fi
-    fi
+    # install the supervisor
+    install_supervisor
 
     # create the shadowsocks user
     SHADOWSOCKS_USER=`awk 'BEGIN{FS=":"}{print $1}' /etc/passwd | egrep '^shadowsocks$'`
@@ -85,6 +88,19 @@ function install_shadowsocks() {
     fi
 
     # config the shadowsocks
+    ln -s /etc/supervisor/tasks-available/shadowsocks.ini /etc/supervisor/tasks-enabled/
+    echo "Link the shadowsocks configure file"
+
+    CONFIG_FILE="/etc/shadowsocks_server.json"
+    if [ -e ${CONFIG_FILE} ];then
+        mv ${CONFIG_FILE} /tmp
+        echo "Move the original ${CONFIG_FILE} to the /tmp"
+    fi
+    cp ./ShadowSocks/shadowsocks_server.json ${CONFIG_FILE}
+    chmod 644 ${CONFIG_FILE}
+
+    # change the password
+    echo "Please change the password in the ${CONFIG_FILE} and restart the shadowsocks"
 }
 
 
