@@ -131,6 +131,6 @@ case "$1" in
         echo "shadowsocks install failed"
         ;;
     *)
-        echo "Usage: $0 {supervisor|shadowsocks}"
+        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks client}"
         ;;
 esac
