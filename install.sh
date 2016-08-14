@@ -68,8 +68,13 @@ function install_shadowsocks() {
         if ! command -v sslocal 2>&1 > /dev/null;then
             pip install shadowsocks
         fi
+
+        # config the sslocal
         cp ./ShadowSocks/shadowsocks.json /etc/shadowsocks.json
         echo "Copy the shadowsock client configure file"
+        ln -s /etc/supervisor/tasks-available/sslocal.ini /etc/supervisor/tasks-enabled/
+        echo "Link the Shadowsocks client supervisor configure file"
+
         echo "Shadowsocks client already installed, Please change the configure file" && exit 0
     fi
 
