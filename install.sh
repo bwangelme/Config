@@ -16,8 +16,7 @@ function install_supervisor() {
     CONFIG_DIR="/etc/supervisor"
     LOG_DIR="/var/log/supervisord/"
 
-    PIP=`which pip`
-    if [ ! -x ${PIP} ];then
+    if ! command -v pip > /dev/null 2>&1;then
         apt-get install python-pip
     fi
 
@@ -64,6 +63,16 @@ function install_shadowsocks() {
     # install the supervisor
     install_supervisor
 
+    if [ $# == 1 -a $1 == 'client' ];then
+        # install shadowsocks client
+        if ! command -v sslocal 2>&1 > /dev/null;then
+            pip install shadowsocks
+        fi
+        cp ./ShadowSocks/shadowsocks.json /etc/shadowsocks.json
+        echo "Copy the shadowsock client configure file"
+        echo "Shadowsocks client already installed, Please change the configure file" && exit 0
+    fi
+
     # create the shadowsocks user
     SHADOWSOCKS_USER=`awk 'BEGIN{FS=":"}{print $1}' /etc/passwd | egrep '^shadowsocks$'`
     if [ "${SHADOWSOCKS_USER}" == '' ];then
@@ -81,8 +90,7 @@ function install_shadowsocks() {
     fi
 
     # install shadowsocks
-    SSSERVER=`which ssserver`
-    if [ ! -x '${SSSERVER}' ];then
+    if ! command -v ssserver > /dev/null 2>&1;then
         pip install shadowsocks
         echo "Install the shadowsocks"
     fi
@@ -110,6 +118,10 @@ case "$1" in
         echo "supervisor install failed"
         ;;
     shadowsocks)
+        if [ $# == 2 ];then
+            install_shadowsocks $2 && exit 0
+            echo "shadowsocks client install failed"
+        fi
         install_shadowsocks && exit 0
         echo "shadowsocks install failed"
         ;;
