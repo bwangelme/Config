@@ -58,6 +58,13 @@ function install_supervisor() {
         mkdir ${LOG_DIR}
     fi
 
+    if ! command -v sysv-rc-conf > /dev/null 2>&1;then
+        apt-get install -y sysv-rc-conf
+    fi
+
+    sysv-rc-conf supervisord on
+    sysv-rc-conf --list supervisord
+
     echo "Please run the |${INIT_FILE} start| to start the Supervisor"
 
     return $?
