@@ -20,6 +20,10 @@ function install_supervisor() {
         apt-get install python-pip
     fi
 
+    if ! command -v supervisord > /dev/null 2>&1;then
+        pip install supervisor
+    fi
+
     WHEEL=`dpkg -l | grep 'python-wheel'`
     if [ "${WHEEL}" == '' ];then
         apt-get install python-wheel
@@ -63,21 +67,6 @@ function install_shadowsocks() {
     # install the supervisor
     install_supervisor
 
-    if [ $# == 1 -a $1 == 'client' ];then
-        # install shadowsocks client
-        if ! command -v sslocal 2>&1 > /dev/null;then
-            pip install shadowsocks
-        fi
-
-        # config the sslocal
-        cp ./ShadowSocks/shadowsocks.json /etc/shadowsocks.json
-        echo "Copy the shadowsock client configure file"
-        ln -s /etc/supervisor/tasks-available/sslocal.ini /etc/supervisor/tasks-enabled/
-        echo "Link the Shadowsocks client supervisor configure file"
-
-        echo "Shadowsocks client already installed, Please change the configure file" && exit 0
-    fi
-
     # create the shadowsocks user
     SHADOWSOCKS_USER=`awk 'BEGIN{FS=":"}{print $1}' /etc/passwd | egrep '^shadowsocks$'`
     if [ "${SHADOWSOCKS_USER}" == '' ];then
@@ -98,6 +87,21 @@ function install_shadowsocks() {
     if ! command -v ssserver > /dev/null 2>&1;then
         pip install shadowsocks
         echo "Install the shadowsocks"
+    fi
+
+    if [ $# == 1 -a $1 == 'client' ];then
+        # install shadowsocks client
+        if ! command -v sslocal 2>&1 > /dev/null;then
+            pip install shadowsocks
+        fi
+
+        # config the sslocal
+        cp ./ShadowSocks/shadowsocks.json /etc/shadowsocks.json
+        echo "Copy the shadowsock client configure file"
+        ln -s /etc/supervisor/tasks-available/sslocal.ini /etc/supervisor/tasks-enabled/
+        echo "Link the Shadowsocks client supervisor configure file"
+
+        echo "Shadowsocks client already installed, Please change the configure file" && exit 0
     fi
 
     # config the shadowsocks
