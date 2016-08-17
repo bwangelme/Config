@@ -127,6 +127,13 @@ function install_shadowsocks() {
     echo "Please change the password in the ${CONFIG_FILE} and restart the shadowsocks"
 }
 
+function install_git() {
+    if [[ ! -x `command -v git` ]];then
+        sudo apt-get install git
+    fi
+    cp ./Git/gitconfig /etc/gitconfig
+}
+
 
 case "$1" in
     supervisor)
@@ -141,7 +148,10 @@ case "$1" in
         install_shadowsocks && exit 0
         echo "shadowsocks install failed"
         ;;
+    git)
+        install_git && echo "Copy the gitconfig"
+        ;;
     *)
-        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks client}"
+        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks client|git}"
         ;;
 esac
