@@ -1,0 +1,11 @@
+[Unit]
+Description=supervisord service
+
+[Service]
+ExecStart=/usr/bin/python /usr/local/bin/supervisord -c /etc/supervisor/supervisord.conf
+Restart=always
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
