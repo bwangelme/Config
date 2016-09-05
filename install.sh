@@ -48,6 +48,7 @@ function install_supervisor() {
     chmod a+x ${SYSTEMD_FILE}
     echo "Copy the ${SYSTEMD_FILE}"
     systemctl daemon-reload
+    systemctl enable supervisord
 
     if [ ! -d ${CONFIG_DIR} ];then
         cp -r ./Supervisor/supervisor /etc/
