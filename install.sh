@@ -12,15 +12,22 @@ fi
 
 
 function install_supervisor() {
+    # INIT_FILE has been depressed
     INIT_FILE="/etc/init.d/supervisord"
+    if [ -e  ${INIT_FILE} ];then
+        mv ${INIT_FILE} /tmp/
+        echo "Move the original ${INIT_FILE} to the /tmp"
+    fi
+
+    SYSTEMD_FILE="/etc/systemd/system/supervisord.service"
     CONFIG_DIR="/etc/supervisor"
     LOG_DIR="/var/log/supervisord/"
 
-    if ! command -v pip > /dev/null 2>&1;then
+    if [[ ! -x $(which pip) ]];then
         apt-get install python-pip
     fi
 
-    if ! command -v supervisord > /dev/null 2>&1;then
+    if [[ ! -x $(which supervisord) ]];then
         pip install supervisor
     fi
 
@@ -33,13 +40,14 @@ function install_supervisor() {
         apt-get install python-setuptools
     fi
 
-    if [ -e  ${INIT_FILE} ];then
-        mv ${INIT_FILE} /tmp/
-        echo "Move the original ${INIT_FILE} to the /tmp"
+    if [[ -e ${SYSTEMD_FILE} ]];then
+        mv ${SYSTEMD_FILE} /tmp/
+        echo "Move the original ${SYSTEMD_FILE} to the /tmp"
     fi
-    cp ./Supervisor/supervisord ${INIT_FILE}
-    chmod a+x ${INIT_FILE}
-    echo "Copy the ${INIT_FILE}"
+    cp ./Supervisor/supervisord.service ${SYSTEMD_FILE}
+    chmod a+x ${SYSTEMD_FILE}
+    echo "Copy the ${SYSTEMD_FILE}"
+    systemctl daemon-reload
 
     if [ ! -d ${CONFIG_DIR} ];then
         cp -r ./Supervisor/supervisor /etc/
@@ -58,14 +66,7 @@ function install_supervisor() {
         mkdir ${LOG_DIR}
     fi
 
-    if ! command -v sysv-rc-conf > /dev/null 2>&1;then
-        apt-get install -y sysv-rc-conf
-    fi
-
-    sysv-rc-conf supervisord on
-    sysv-rc-conf --list supervisord
-
-    echo "Please run the |${INIT_FILE} start| to start the Supervisor"
+    echo "Please run the |sudo systemctl start supervisord| to start the Supervisor"
 
     return $?
 }
@@ -91,14 +92,14 @@ function install_shadowsocks() {
     fi
 
     # install shadowsocks
-    if ! command -v ssserver > /dev/null 2>&1;then
+    if [[ ! -x $(which sserver) ]];then
         pip install shadowsocks
         echo "Install the shadowsocks"
     fi
 
-    if [ $# == 1 -a $1 == 'client' ];then
+    if [ "$#" == 1 -a "$1" == 'client' ];then
         # install shadowsocks client
-        if ! command -v sslocal 2>&1 > /dev/null;then
+        if [[ ! -x $(which sslocal) ]];then
             pip install shadowsocks
         fi
 
@@ -128,10 +129,13 @@ function install_shadowsocks() {
 }
 
 function install_git() {
-    if [[ ! -x `command -v git` ]];then
+    if [[ ! -x $(which git) ]];then
         sudo apt-get install git
     fi
-    cp ./Git/gitconfig /etc/gitconfig
+    if [[ -e "/etc/gitconfig" ]];then
+        rm "/etc/gitconfig"
+    fi
+    ln -s "$(pwd)/Git/gitconfig" /etc/gitconfig
 }
 
 
@@ -141,17 +145,17 @@ case "$1" in
         echo "supervisor install failed"
         ;;
     shadowsocks)
-        if [ $# == 2 ];then
-            install_shadowsocks $2 && exit 0
-            echo "shadowsocks client install failed"
-        fi
         install_shadowsocks && exit 0
         echo "shadowsocks install failed"
         ;;
+    shadowsocks-client)
+        install_shadowsocks "client" && exit 0
+        echo "shadowsocks client install failed"
+        ;;
     git)
-        install_git && echo "Copy the gitconfig"
+        install_git && echo "Link the gitconfig"
         ;;
     *)
-        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks client|git}"
+        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git}"
         ;;
 esac
