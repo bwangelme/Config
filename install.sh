@@ -12,13 +12,6 @@ fi
 
 
 function install_supervisor() {
-    # INIT_FILE has been depressed
-    INIT_FILE="/etc/init.d/supervisord"
-    if [ -e  ${INIT_FILE} ];then
-        mv ${INIT_FILE} /tmp/
-        echo "Move the original ${INIT_FILE} to the /tmp"
-    fi
-
     SYSTEMD_FILE="/etc/systemd/system/supervisord.service"
     CONFIG_DIR="/etc/supervisor"
     LOG_DIR="/var/log/supervisord/"
@@ -93,7 +86,7 @@ function install_shadowsocks() {
     fi
 
     # install shadowsocks
-    if [[ ! -x $(which sserver) ]];then
+    if [[ ! -x $(which ssserver) ]];then
         pip install shadowsocks
         echo "Install the shadowsocks"
     fi
