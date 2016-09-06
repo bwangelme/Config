@@ -148,6 +148,13 @@ function install_hooks() {
         rm ${HOOKS_FILE}
     fi
     cp "$(pwd)/Blog/hooks.py" ${HOOKS_FILE} && echo "Copy the hooks file"
+
+    # Copy the build shell
+    BUILD_SHELL="/var/www/blog/build.sh"
+    if [[ -e ${BUILD_SHELL} ]];then
+        rm ${BUILD_SHELL}
+    fi
+    cp "$(pwd)/Blog/build.sh" ${BUILD_SHELL} && echo "Copy the build shell script"
 }
 
 function install_blog() {
