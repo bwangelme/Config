@@ -127,9 +127,26 @@ function install_git() {
         sudo apt-get install git
     fi
     if [[ -e "/etc/gitconfig" ]];then
-        rm "/etc/gitconfig"
+        mv "/etc/gitconfig" "/etc/gitconfig.bak"
     fi
     ln -s "$(pwd)/Git/gitconfig" /etc/gitconfig
+}
+
+function install_blog() {
+    AVALIABLE_FILE="/etc/nginx/sites-available/blog.conf"
+    ENABLE_FILE="/etc/nginx/sites-enabled/blog.conf"
+    if [[ ! -x $(which nginx) ]];then
+        sudo apt-get install nginx
+    fi
+    if [[ -e "${ENABLE_FILE}" ]];then
+        rm ${ENABLE_FILE} && echo "Delete the ${ENABLE_FILE}"
+    fi
+    if [[ -e "${AVALIABLE_FILE}" ]];then
+        rm ${AVALIABLE_FILE} && echo "Delete the ${AVALIABLE_FILE}"
+    fi
+    cp "$(pwd)/Blog/blog.conf" ${AVALIABLE_FILE}
+    ln -s ${AVALIABLE_FILE} ${ENABLE_FILE}
+    nginx -s reload 2> /dev/null || nginx
 }
 
 
@@ -149,7 +166,10 @@ case "$1" in
     git)
         install_git && echo "Link the gitconfig"
         ;;
+    blog)
+        install_blog && echo "Install the hexo blog"
+        ;;
     *)
-        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git}"
+        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git|blog}"
         ;;
 esac
