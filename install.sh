@@ -132,7 +132,37 @@ function install_git() {
     ln -s "$(pwd)/Git/gitconfig" /etc/gitconfig
 }
 
+function install_hooks() {
+    # make log dir
+    LOG_DIR="/var/log/hooks/"
+    if [ ! -d ${LOG_DIR} ];then
+        mkdir -p ${LOG_DIR} && echo "Make the dir ${LOG_DIR}"
+    fi
+
+    # config the hooks
+    ln -s /etc/supervisor/tasks-available/hooks.ini /etc/supervisor/tasks-enabled/ && echo "Link the hooks supervisor file"
+
+    # Copy the hooks file
+    HOOKS_FILE="/var/www/blog/hooks.py"
+    if [[ -e ${HOOKS_FILE} ]];then
+        rm ${HOOKS_FILE}
+    fi
+    cp "$(pwd)/Blog/hooks.py" ${HOOKS_FILE} && echo "Copy the hooks file"
+}
+
 function install_blog() {
+    install_supervisor
+
+    REPO_DIR="/var/www/blog"
+    if [[ ! -d ${REPO_DIR} ]];then
+        git clone -b master https://github.com/bwangel23/bwangel23.github.io.git ${REPO_DIR}
+    else
+        git -C ${REPO_DIR} pull origin master
+    fi
+
+    install_hooks
+    systemctl restart supervisord.service
+
     AVALIABLE_FILE="/etc/nginx/sites-available/blog.conf"
     ENABLE_FILE="/etc/nginx/sites-enabled/blog.conf"
     if [[ ! -x $(which nginx) ]];then
