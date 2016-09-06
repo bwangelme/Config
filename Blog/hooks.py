@@ -50,7 +50,6 @@ class UpdateHandler(tornado.web.RequestHandler):
     def post(self):
         user_agent = self.request.headers.get('User-Agent')
         data = tornado.escape.json_decode(self.request.body)
-        logging.info(data)
         github_event = self.request.headers.get('X-GitHub-Event')
         ref = data.get('ref')
         if "GitHub-Hookshot/" not in user_agent:
@@ -83,7 +82,7 @@ class UpdateHandler(tornado.web.RequestHandler):
 def make_app():
     return tornado.web.Application(
         handlers=[(r"/update", UpdateHandler),],
-        debug=True,
+        debug=False,
     )
 
 
