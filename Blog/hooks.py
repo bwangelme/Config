@@ -4,6 +4,7 @@
 
 import threading
 import os
+import json
 
 import tornado.ioloop
 import tornado.web
@@ -50,15 +51,40 @@ class UpdateHandler(tornado.web.RequestHandler):
         self.post()
 
     def post(self):
-        self.set_status(200)
-        self.write(b"OK")
-        threading.Thread(target=build).start()
+        user_agent = self.request.headers.get('User-Agent')
+        github_event = self.request.headers.get('X-GitHub-Event')
+        ref = self.get_argument('ref')
+        if "GitHub-Hookshot/" not in user_agent:
+            logging.warn('Get a wrong request from {}'
+                         .format(self.request.remote_ip))
+            raise tornado.web.HTTPError(404)
+
+        if ref != 'refs/heads/master':
+            self.set_status(200)
+            result = {
+                'status': 'Wrong Branch'
+            }
+            logging.info('Get a {} event from {}'.format(github_event, ref))
+        elif github_event != 'push':
+            self.set_status(200)
+            result = {
+                'status': 'Wrong Event'
+            }
+            logging.info('Get a {} event from {}'.format(github_event, ref))
+        elif github_event == 'push' and ref == 'refs/heads/master':
+            self.set_status(200)
+            result = {
+                'status': 'OK'
+            }
+            threading.Thread(target=build).start()
+        self.write(json.dumps(result))
+        self.finish()
 
 
 def make_app():
     return tornado.web.Application(
         handlers=[(r"/update", UpdateHandler),],
-        debug=True,
+        debug=False,
     )
 
 
