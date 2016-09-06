@@ -47,13 +47,12 @@ def build():
 
 
 class UpdateHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.post()
-
     def post(self):
         user_agent = self.request.headers.get('User-Agent')
+        data = tornado.escape.json_decode(self.request.body)
+        logging.info(data)
         github_event = self.request.headers.get('X-GitHub-Event')
-        ref = self.get_argument('ref')
+        ref = data.get('ref')
         if "GitHub-Hookshot/" not in user_agent:
             logging.warn('Get a wrong request from {}'
                          .format(self.request.remote_ip))
@@ -84,7 +83,7 @@ class UpdateHandler(tornado.web.RequestHandler):
 def make_app():
     return tornado.web.Application(
         handlers=[(r"/update", UpdateHandler),],
-        debug=False,
+        debug=True,
     )
 
 
