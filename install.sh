@@ -133,6 +133,14 @@ function install_git() {
 }
 
 function install_hooks() {
+    # install the pip3
+    if [[ ! -x $(which pip3) ]];then
+        apt-get install python3-pip
+    fi
+
+    # install the tornado
+    pip3 install tornado
+
     # make log dir
     LOG_DIR="/var/log/hooks/"
     if [ ! -d ${LOG_DIR} ];then
