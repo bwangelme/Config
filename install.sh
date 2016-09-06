@@ -12,6 +12,10 @@ fi
 
 
 function install_supervisor() {
+    if [[ -x $(which supervisord) ]];then
+        return 0
+    fi
+
     SYSTEMD_FILE="/etc/systemd/system/supervisord.service"
     CONFIG_DIR="/etc/supervisor"
     LOG_DIR="/var/log/supervisord/"
@@ -157,6 +161,10 @@ function install_hooks() {
     fi
 
     # config the hooks
+    CONFIG_FILE="/etc/supervisor/tasks-enabled/hooks.ini"
+    if [[ -e ${CONFIG_FILE} ]];then
+        rm ${CONFIG_FILE} && echo "Delete the ${CONFIG_FILE}"
+    fi
     ln -s /etc/supervisor/tasks-available/hooks.ini /etc/supervisor/tasks-enabled/ && echo "Link the hooks supervisor file"
 
     # Copy the hooks file
