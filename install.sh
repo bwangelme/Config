@@ -17,7 +17,7 @@ function install_supervisor() {
     LOG_DIR="/var/log/supervisord/"
 
     if [[ ! -x $(which pip) ]];then
-        apt-get install python-pip
+        apt-get -y install python-pip
     fi
 
     if [[ ! -x $(which supervisord) ]];then
@@ -26,11 +26,11 @@ function install_supervisor() {
 
     WHEEL=`dpkg -l | grep 'python-wheel'`
     if [ "${WHEEL}" == '' ];then
-        apt-get install python-wheel
+        apt-get -y install python-wheel
     fi
     SETUPTOOLS=`dpkg -l | grep 'python-setuptools'`
     if [ "${SETUPTOOLS}" == '' ];then
-        apt-get install python-setuptools
+        apt-get -y install python-setuptools
     fi
 
     if [[ -e ${SYSTEMD_FILE} ]];then
@@ -124,7 +124,7 @@ function install_shadowsocks() {
 
 function install_git() {
     if [[ ! -x $(which git) ]];then
-        sudo apt-get install git
+        apt-get -y install git
     fi
     if [[ -e "/etc/gitconfig" ]];then
         mv "/etc/gitconfig" "/etc/gitconfig.bak"
@@ -135,7 +135,16 @@ function install_git() {
 function install_hooks() {
     # install the pip3
     if [[ ! -x $(which pip3) ]];then
-        apt-get install python3-pip
+        apt-get -y install python3-pip
+    fi
+
+    WHEEL=`dpkg -l | grep 'python3-wheel'`
+    if [ "${WHEEL}" == '' ];then
+        apt-get -y install python3-wheel
+    fi
+    SETUPTOOLS=`dpkg -l | grep 'python3-setuptools'`
+    if [ "${SETUPTOOLS}" == '' ];then
+        apt-get -y install python3-setuptools
     fi
 
     # install the tornado
@@ -181,7 +190,7 @@ function install_blog() {
     AVALIABLE_FILE="/etc/nginx/sites-available/blog.conf"
     ENABLE_FILE="/etc/nginx/sites-enabled/blog.conf"
     if [[ ! -x $(which nginx) ]];then
-        sudo apt-get install nginx
+        sudo apt-get -y install nginx
     fi
     if [[ -e "${ENABLE_FILE}" ]];then
         rm ${ENABLE_FILE} && echo "Delete the ${ENABLE_FILE}"
