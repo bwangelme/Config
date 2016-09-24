@@ -12,12 +12,16 @@ fi
 
 
 function install_supervisor() {
+    if [[ -x $(which supervisord) ]];then
+        return 0
+    fi
+
     SYSTEMD_FILE="/etc/systemd/system/supervisord.service"
     CONFIG_DIR="/etc/supervisor"
     LOG_DIR="/var/log/supervisord/"
 
     if [[ ! -x $(which pip) ]];then
-        apt-get install python-pip
+        apt-get -y install python-pip
     fi
 
     if [[ ! -x $(which supervisord) ]];then
@@ -26,11 +30,11 @@ function install_supervisor() {
 
     WHEEL=`dpkg -l | grep 'python-wheel'`
     if [ "${WHEEL}" == '' ];then
-        apt-get install python-wheel
+        apt-get -y install python-wheel
     fi
     SETUPTOOLS=`dpkg -l | grep 'python-setuptools'`
     if [ "${SETUPTOOLS}" == '' ];then
-        apt-get install python-setuptools
+        apt-get -y install python-setuptools
     fi
 
     if [[ -e ${SYSTEMD_FILE} ]];then
@@ -124,12 +128,87 @@ function install_shadowsocks() {
 
 function install_git() {
     if [[ ! -x $(which git) ]];then
-        sudo apt-get install git
+        apt-get -y install git
     fi
     if [[ -e "/etc/gitconfig" ]];then
-        rm "/etc/gitconfig"
+        mv "/etc/gitconfig" "/etc/gitconfig.bak"
     fi
     ln -s "$(pwd)/Git/gitconfig" /etc/gitconfig
+}
+
+function install_hooks() {
+    # install the pip3
+    if [[ ! -x $(which pip3) ]];then
+        apt-get -y install python3-pip
+    fi
+
+    WHEEL=`dpkg -l | grep 'python3-wheel'`
+    if [ "${WHEEL}" == '' ];then
+        apt-get -y install python3-wheel
+    fi
+    SETUPTOOLS=`dpkg -l | grep 'python3-setuptools'`
+    if [ "${SETUPTOOLS}" == '' ];then
+        apt-get -y install python3-setuptools
+    fi
+
+    # install the tornado
+    pip3 install tornado
+
+    # make log dir
+    LOG_DIR="/var/log/hooks/"
+    if [ ! -d ${LOG_DIR} ];then
+        mkdir -p ${LOG_DIR} && echo "Make the dir ${LOG_DIR}"
+    fi
+
+    # config the hooks
+    CONFIG_FILE="/etc/supervisor/tasks-enabled/hooks.ini"
+    if [[ -e ${CONFIG_FILE} ]];then
+        rm ${CONFIG_FILE} && echo "Delete the ${CONFIG_FILE}"
+    fi
+    ln -s /etc/supervisor/tasks-available/hooks.ini /etc/supervisor/tasks-enabled/ && echo "Link the hooks supervisor file"
+
+    # Copy the hooks file
+    HOOKS_FILE="/var/www/blog/hooks.py"
+    if [[ -e ${HOOKS_FILE} ]];then
+        rm ${HOOKS_FILE}
+    fi
+    cp "$(pwd)/Blog/hooks.py" ${HOOKS_FILE} && echo "Copy the hooks file"
+
+    # Copy the build shell
+    BUILD_SHELL="/var/www/blog/build.sh"
+    if [[ -e ${BUILD_SHELL} ]];then
+        rm ${BUILD_SHELL}
+    fi
+    cp "$(pwd)/Blog/build.sh" ${BUILD_SHELL} && echo "Copy the build shell script"
+}
+
+function install_blog() {
+    install_supervisor
+
+    REPO_DIR="/var/www/blog"
+    if [[ ! -d ${REPO_DIR} ]];then
+        git clone -b master https://github.com/bwangel23/bwangel23.github.io.git ${REPO_DIR}
+    else
+        git -C ${REPO_DIR} pull origin master
+    fi
+
+    install_hooks
+    systemctl restart supervisord.service
+
+    AVALIABLE_FILE="/etc/nginx/sites-available/blog.conf"
+    ENABLE_FILE="/etc/nginx/sites-enabled/blog.conf"
+    if [[ ! -x $(which nginx) ]];then
+        sudo apt-get -y install nginx
+    fi
+    if [[ -e "${ENABLE_FILE}" ]];then
+        rm ${ENABLE_FILE} && echo "Delete the ${ENABLE_FILE}"
+    fi
+    if [[ -e "${AVALIABLE_FILE}" ]];then
+        rm ${AVALIABLE_FILE} && echo "Delete the ${AVALIABLE_FILE}"
+    fi
+    cp "$(pwd)/Blog/blog.conf" ${AVALIABLE_FILE}
+    ln -s ${AVALIABLE_FILE} ${ENABLE_FILE}
+    nginx -s reload 2> /dev/null || nginx
 }
 
 
@@ -149,7 +228,10 @@ case "$1" in
     git)
         install_git && echo "Link the gitconfig"
         ;;
+    blog)
+        install_blog && echo "Install the hexo blog"
+        ;;
     *)
-        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git}"
+        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git|blog}"
         ;;
 esac
