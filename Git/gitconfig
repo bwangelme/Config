@@ -1,6 +1,6 @@
 [user]
 	email = bwangel.me@gmail.com
-	name = bwangel
+	name = bwangel23
 [core]
 	editor = vim
 [color]
@@ -11,3 +11,8 @@
     st = status
 [push]
 	default = simple
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
