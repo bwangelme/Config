@@ -136,52 +136,6 @@ function install_git() {
     ln -s "$(pwd)/Git/gitconfig" /etc/gitconfig
 }
 
-function install_hooks() {
-    # install the pip3
-    if [[ ! -x $(which pip3) ]];then
-        apt-get -y install python3-pip
-    fi
-
-    WHEEL=`dpkg -l | grep 'python3-wheel'`
-    if [ "${WHEEL}" == '' ];then
-        apt-get -y install python3-wheel
-    fi
-    SETUPTOOLS=`dpkg -l | grep 'python3-setuptools'`
-    if [ "${SETUPTOOLS}" == '' ];then
-        apt-get -y install python3-setuptools
-    fi
-
-    # install the tornado
-    pip3 install tornado
-
-    # make log dir
-    LOG_DIR="/var/log/hooks/"
-    if [ ! -d ${LOG_DIR} ];then
-        mkdir -p ${LOG_DIR} && echo "Make the dir ${LOG_DIR}"
-    fi
-
-    # config the hooks
-    CONFIG_FILE="/etc/supervisor/tasks-enabled/hooks.ini"
-    if [[ -e ${CONFIG_FILE} ]];then
-        rm ${CONFIG_FILE} && echo "Delete the ${CONFIG_FILE}"
-    fi
-    ln -s /etc/supervisor/tasks-available/hooks.ini /etc/supervisor/tasks-enabled/ && echo "Link the hooks supervisor file"
-
-    # Copy the hooks file
-    HOOKS_FILE="/var/www/blog/hooks.py"
-    if [[ -e ${HOOKS_FILE} ]];then
-        rm ${HOOKS_FILE}
-    fi
-    cp "$(pwd)/Blog/hooks.py" ${HOOKS_FILE} && echo "Copy the hooks file"
-
-    # Copy the build shell
-    BUILD_SHELL="/var/www/blog/build.sh"
-    if [[ -e ${BUILD_SHELL} ]];then
-        rm ${BUILD_SHELL}
-    fi
-    cp "$(pwd)/Blog/build.sh" ${BUILD_SHELL} && echo "Copy the build shell script"
-}
-
 function install_blog() {
     install_supervisor
 
@@ -192,7 +146,6 @@ function install_blog() {
         git -C ${REPO_DIR} pull origin master
     fi
 
-    install_hooks
     systemctl restart supervisord.service
 
     AVALIABLE_FILE="/etc/nginx/sites-available/blog.conf"
