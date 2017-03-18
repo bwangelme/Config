@@ -164,6 +164,13 @@ function install_blog() {
     nginx -s reload 2> /dev/null || nginx
 }
 
+function install_docker () {
+    if [[ ! -d "$HOME/.docker" ]];then
+        mkdir $HOME/.docker
+    fi
+    cp -v "$(pwd)/docker/config.json" $HOME/.docker/
+}
+
 
 case "$1" in
     supervisor)
@@ -184,7 +191,10 @@ case "$1" in
     blog)
         install_blog && echo "Install the hexo blog"
         ;;
+    docker)
+        install_docker && echo "Install the docker config file"
+        ;;
     *)
-        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git|blog}"
+        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git|blog|docker}"
         ;;
 esac
