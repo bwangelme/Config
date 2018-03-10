@@ -1,18 +1,21 @@
 [user]
-	email = bwangel.me@gmail.com
-	name = bwangel23
+    email = bwangel.me@gmail.com
+    name = bwangel23
 [core]
-	editor = vim
+    editor = vim
+    quotepath = false
+    compression = -1
+    pager = "diff-so-fancy | less --tabs=4 -RFX"
 [color]
-	ui = true
+    ui = true
 [alias]
-	slog  = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate
-	unstage = checkout --
+    slog  = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate
+    unstage = checkout --
     st = status
 [push]
-	default = simple
+    default = simple
 [filter "lfs"]
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
-	clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+    clean = git-lfs clean -- %f
