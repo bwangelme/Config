@@ -4,14 +4,16 @@
 #Program:
 #
 
-
-if [ $UID != 0 ];then
-    echo "You must run this script as root"
-    exit 0
-fi
-
+function need_root() {
+    if [ $UID != 0 ];then
+        echo "You must run this script as root"
+        exit 0
+    fi
+}
 
 function install_supervisor() {
+    need_root
+
     if [[ -x $(which supervisord) ]];then
         return 0
     fi
@@ -70,6 +72,7 @@ function install_supervisor() {
 }
 
 function install_shadowsocks() {
+    need_root
     # install the supervisor
     install_supervisor
 
@@ -127,6 +130,7 @@ function install_shadowsocks() {
 }
 
 function install_git() {
+    need_root
     if [[ ! -x $(which git) ]];then
         apt-get -y install git
     fi
@@ -137,6 +141,7 @@ function install_git() {
 }
 
 function install_blog() {
+    need_root
     install_supervisor
 
     REPO_DIR="/var/www/blog"
@@ -171,6 +176,20 @@ function install_docker () {
     cp -v "$(pwd)/docker/config.json" $HOME/.docker/
 }
 
+function install_bin () {
+    if [[ ! -d "$HOME/bin" ]];then
+        mkdir $HOME/bin
+    fi
+
+    for file in $(pwd)/bin/*; do
+        filename=$(basename $file)
+        if [[ ! -h "$HOME/bin/${filename}" ]];then
+            ln -s $(pwd)/bin/${filename} $HOME/bin/
+            echo "Link the $(pwd)/bin/${filename} to the $HOME/bin/${filename}"
+        fi
+    done
+}
+
 
 case "$1" in
     supervisor)
@@ -194,7 +213,10 @@ case "$1" in
     docker)
         install_docker && echo "Install the docker config file"
         ;;
+    bin)
+        install_bin && echo "Install the custom command"
+        ;;
     *)
-        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git|blog|docker}"
+        echo "Usage: $0 {supervisor|shadowsocks|shadowsocks-client|git|blog|docker|bin}"
         ;;
 esac
