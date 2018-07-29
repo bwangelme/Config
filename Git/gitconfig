@@ -1,11 +1,20 @@
+[http]
+	postBuffer = 24288000
 [user]
-    email = bwangel.me@gmail.com
-    name = bwangel23
+	name = xuyundong
+	email = xuyundong@douban.com
 [core]
-    editor = vim
+	excludesfile = /Users/michaeltsui/.gitignore
+    pager = "diff-so-fancy | less --tabs=4 -RFX"
+    editor = nvim
     quotepath = false
     compression = -1
-    pager = "diff-so-fancy | less --tabs=4 -RFX"
+[icdiff]
+	options = --highlight --line-numbers
+
+    slog  = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate
+    unstage = checkout --
+    st = status
 [color]
     ui = true
 [alias]
@@ -14,8 +23,3 @@
     st = status
 [push]
     default = simple
-[filter "lfs"]
-    smudge = git-lfs smudge -- %f
-    process = git-lfs filter-process
-    required = true
-    clean = git-lfs clean -- %f
