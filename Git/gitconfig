@@ -6,9 +6,10 @@
 [core]
 	excludesfile = /Users/michaeltsui/.gitignore
     pager = "diff-so-fancy | less --tabs=4 -RFX"
-    editor = nvim
+    editor = vim
     quotepath = false
     compression = -1
+	ignorecase = false
 [icdiff]
 	options = --highlight --line-numbers
 
