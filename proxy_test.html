@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Proxy JS Test</title>
+    <script src="http://0.0.0.0/pac/"></script>
+    <script src="https://unpkg.com/vue@2.5.17/dist/vue.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css" />
+</head>
+<body>
+    <div class="flex-center">
+        <div id="app" class="container">
+            <h2>Input URL</h2>
+            <form action="" class="form">
+                <input id="url-input" type="text" v-model="url">
+            </form>
+            <h2>Proxy</h2>
+            <code>{{ proxy }}</code>
+        </div>
+    </div>
+
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                url: "https://www.google.com/",
+            },
+            computed: {
+                proxy: function () {
+                    var loc = new URL(this.url)
+                    var proxy = FindProxyForURL(loc.pathname, loc.host);
+                    return proxy;
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
