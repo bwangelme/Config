@@ -13,6 +13,7 @@ proxy_reg_list = [
         /.*google-analytics\.com$/,
         /.*googletagmanager\.com$/,
         /.*dl.bintray.com\.com$/,
+        /developer\.mozilla\.org$/,
         /.*disquscdn\.com$/,
         /.*zuolinux\.com$/,
         /.*debian\.org\.tw$/,

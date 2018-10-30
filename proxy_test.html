@@ -28,7 +28,16 @@
             },
             computed: {
                 proxy: function () {
-                    var loc = new URL(this.url)
+                    try {
+                        var loc = new URL(this.url)
+                    }
+                    catch(error) {
+                        if (error instanceof TypeError) {
+                            return "INVALID URL";
+                        }
+                        throw error;
+                    }
+
                     var proxy = FindProxyForURL(loc.pathname, loc.host);
                     return proxy;
                 }
