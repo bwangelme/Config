@@ -1,18 +1,20 @@
 [http]
-	postBuffer = 24288000
+    postBuffer = 24288000
+	; proxy = http://tunnel.douban.com:8118/
 [user]
-	name = xuyundong
-	email = xuyundong@douban.com
+    name = xuyundong
+    email = xuyundong@douban.com
+    ; name = bwangelme
+    ; email = bwangel.me@gmail.com
 [core]
-	excludesfile = /Users/michaeltsui/.gitignore
-    pager = "diff-so-fancy | less --tabs=4 -RFX"
+    excludesfile = /Users/michaeltsui/.gitignore
+    # pager = "diff-so-fancy | less --tabs=4 -RFX"
     editor = vim
     quotepath = false
     compression = -1
-	ignorecase = false
+    ignorecase = false
 [icdiff]
-	options = --highlight --line-numbers
-
+    options = --highlight --line-numbers
     slog  = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate
     unstage = checkout --
     st = status
@@ -22,5 +24,11 @@
     slog  = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --decorate
     unstage = checkout --
     st = status
+    cb = checkout-branch
 [push]
     default = simple
+[filter "lfs"]
+    process = git-lfs filter-process
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
