@@ -2,8 +2,8 @@
     postBuffer = 24288000
     ; proxy = http://tunnel.douban.com:8118/
 [user]
-    name = xuyundong
-    email = xuyundong@douban.com
+    name = bwangelme
+    email = bwangel.me@gmail.com
 [core]
     excludesfile = /Users/michaeltsui/.gitignore
     # pager = "diff-so-fancy | less --tabs=4 -RFX"
@@ -30,3 +30,5 @@
     required = true
     clean = git-lfs clean -- %f
     smudge = git-lfs smudge -- %f
+[pull]
+    rebase = true
