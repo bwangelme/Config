@@ -382,7 +382,7 @@ proxy_reg_list = [
 ]
 
 function FindProxyForURL(url, host) {
-    PROXY = "PROXY tunnel.douban.com:8118;HTTPS tunnel.douban.com:8443;DIRECT";
+    PROXY = "PROXY 10.8.0.1:8118;HTTPS 10.8.0.1:8118;DIRECT";
 
     for (i = 0; i < proxy_reg_list.length; i++) {
         if (proxy_reg_list[i].test(host)) {
