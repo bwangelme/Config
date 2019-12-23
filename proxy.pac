@@ -197,6 +197,7 @@ proxy_reg_list = [
         /.*docker\.com$/,
         /.*cb\.com\.cn$/,
         /.*mmofreegames\.online$/,
+        /.*freenode.net$/,
         /.*contentabc\.com$/,
         /.*twimg\.com$/,
         /.*ggpht\.com$/,
