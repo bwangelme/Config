@@ -1,8 +1,0 @@
-{
-    "server":"default.server",
-    "server_port":12573,
-    "local_address":"127.0.0.1",
-    "local_port":1080,
-    "password":"default",
-    "method":"rc4-md5"
-}
